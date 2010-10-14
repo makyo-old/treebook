@@ -1,0 +1,27 @@
+{% extends "forum/base.html" %}
+
+{% load bbcode %}
+
+{% block title %}{% block header %}Edit user signature{% endblock %}{% endblock %}
+
+{% block content %}
+<form method="post">
+    <table>
+        <thead>
+            <tr>
+                <th><strong>Preview:</strong></th>
+                <td><p>{{ user.forumuser.signature|striptags|bbcode|safe }}</p></td>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <th><label for="signature">Signature</label></th>
+                <td><textarea name="signature" rows="10" cols="40">{{ sig }}</textarea></td>
+            </tr>
+            <tr>
+                <th colspan="2"><input type="submit" value="Update signature" /></th>
+            </tr>
+        </tbody>
+    </table>
+</form>
+{% endblock %}

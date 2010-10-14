@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+
+{% block title %}{% block header %}Permission Denied{% endblock %}{% endblock %}
+
+{% block content %}
+<div class="failure">Permission denied</div>
+Reason: {{ reason }}
+{% endblock %}

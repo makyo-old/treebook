@@ -1,0 +1,47 @@
+{% extends "forum/base.html" %}
+
+{% load bbcode %}
+{% load forumtree %}
+
+{% block title %}{% block header %}{{ forum.name }}{% endblock %}{% endblock %}
+
+{% block content %}
+{% if forum.parent %}{% ifnotequal forum.parent "__root__" %}
+<p><a href="/forums/{{ forum.parent.slug }}/">&larr; Back to <em>{{ forum.parent.name }}</em></a></p>
+{% endifnotequal %}{% endif %}
+{% if forum.users_can_post %}
+<p style="text-align: center"><form action="post/"><input type="submit" value="New Topic" /></form></p><br />
+{% endif %}
+<table id="forum">
+    {% if posts %}
+    <tr>
+        <th>Post</th>
+        <th width="15%">Replies</th>
+    </tr>
+    {% for post in posts %}
+    <tr class="{% cycle "odd" "even" %}">
+        <td><strong><a href="/forums/{{ post.forum.slug }}/{{ post.id }}/">{{ post.title }}</a></strong> -
+            {% if post.owner.creator_set %}<a style="font-size: 75%" href="/store/creator/{{ post.owner.username }}/">{{ post.owner.get_full_name }}</a>
+            {% else %}{{ post.owner.username }}{% endif %}<br />
+            <p style="font-size: 75%">{{ post.body|striptags|stripbb|truncatewords_html:15|safe }}</p></td>
+        <td class="pcount">{{ post.post_set.count }}</td>
+    </tr>
+    {% endfor %}
+    {% if forum.forum_set.all %}
+    <tr>
+        <td colspan="2"><hr /></td>
+    </tr>
+    {% endif %}
+    {% endif %}
+    {% if forum.forum_set.all %}
+    <tr>
+        <th>Forum</th>
+        <th width="15%">Post Count</th>
+    </tr>
+    {{ forum|forumtree }}
+    {% endif %}
+</table>
+{% if forum.users_can_post %}
+<p style="text-align: center"><form action="post/"><input type="submit" value="New Topic" /></form></p>
+{% endif %}
+{% endblock %}

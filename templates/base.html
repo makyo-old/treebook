@@ -1,0 +1,76 @@
+<!DOCTYPE html PUBLIC -//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+    <head>
+        <title>Manifesto Project | {% block title %}{% endblock %}</title>
+        <link rel="stylesheet" type="text/css" href="http://media.mjs-svc.com/manifesto/css/base.css" />
+        <link rel="stylesheet" type="text/css" href="http://media.mjs-svc.com/manifesto/jquery-ui-1.8.1.custom/css/ui-darkness/jquery-ui-1.8.1.custom.css" />
+        <link rel="icon" type="image/png" href="http://media.mjs-svc.com/manifesto/stick2-icon.png" />
+        <script src="http://www.google.com/jsapi"></script>
+        <script type="text/javascript">
+            google.load("jquery", "1.4.2");
+            google.load("jqueryui", "1.8.1");
+        </script>
+        <script type="text/javascript" src="http://media.mjs-svc.com/manifesto/nicEdit.js"></script>
+        <script type="text/javascript">
+            $(document).ready(function () {
+                /*
+                NicEdit doesn't work on iPhones or Android phones; only load it if the UA isn't one of those
+                */
+                if (navigator.userAgent.toLowerCase().indexOf('iphone') == -1 
+                        && navigator.userAgent.toLowerCase().indexOf('android') == -1) {
+                    nicEditors.allTextAreas({iconsPath: 'http://media.mjs-svc.com/manifesto/nicEditorIcons.gif'});
+                }
+                $('.hide').hide();
+            });
+        </script>
+        {% block sectionheaders %}{% endblock %}
+    </head>
+    <body>
+        <div id="page">
+            <div id="skiplink"><a href="#content">Skip to content</a></div>
+            <div id="header">
+                <img src="http://media.mjs-svc.com/manifesto/manifestoheader.jpg" alt="The Manifesto Project" />
+            </div>
+            <div id="navigation">
+                <ul>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="javascript:" onclick="$('#manifesto-submenu').toggle('slow');">Manifestos</a>
+                    <ul id="manifesto-submenu" class="hide">
+                        <li><a href="/manifesto/recent">Recent</a></li>
+                        <li><a href="/manifesto/featured/">Featured</a></li>
+                        <li><a href="/manifesto/highest-rated/">Highest Rated</a></li>
+                        {% if user.is_authenticated %}<li><a href="/author/{{ user.username }}/friends/">Friends</a></li>{% endif %}
+                        <li><a href="/manifesto/tags/">Tags</a></li>
+                    </ul>
+                    </li>
+                    <li><a href="/forums/">Forums</a></li>
+                </ul>
+            </div>
+            <div id="usercontrol">
+                <ul>
+                    {% if user.is_authenticated %}
+                    <li><a href="/manifesto/new/">Post</a></li>
+                    <li><a href="/author/{{ user.username }}/">Profile</a></li>
+                    <li><a href="/accounts/profile/">User Info</a></li>
+                    <li><a href="/accounts/logout/">Logout</a></li>
+                    {% else %}
+                    <li><a href="/accounts/login/">Login</a></li>
+                    <li><a href="/accounts/register/">Register</a></li>
+                    {% endif %}
+                    <li><a href="/rules/">Rules</a></li>
+                </ul>
+            </div>
+            <div id="content">
+                <h2><a name="content"> </a>{% block header %}{% endblock %}</h2>
+                {% for message in messages %}{{ message|safe }}{% endfor %}
+                {% block content %}{% endblock %}
+            </div>
+            <div id="footer">An <a href="http://mjs-svc.com">MJS Services</a> project | Powered by <a href="http://djangoproject.com">Django</a><br />
+            <a href="/ip/">Copyright and Intellectual Property information</a></div>
+        </div>
+    </body>
+    <!--
+    vim: ft=htmldjango
+    -->
+</html>

@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{% load tagging_tags %}
+
+{% block title %}{% block header %}Manifesto Tag Cloud{% endblock %}{% endblock %}
+
+{% block content %}
+{% tag_cloud_for_model manifest.Manifesto as mtags %}
+{% for tag in mtags %}<span style="font-size: 1{{ tag.font_size }}"><a href="/manifesto/tag/{{ tag.name|urlencode }}/">{{ tag.name }}</a></span> {% endfor %}
+{% endblock %}

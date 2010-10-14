@@ -1,0 +1,253 @@
+{% extends "base.html" %}
+
+{% load tagging_tags %}
+{% load comments %}
+{% load threadedcomments_tags %}
+
+{% block title %}{{ manifesto.title }}{% endblock %}
+
+{% block content %}
+<div class="manifesto">
+    <div class="mheader">
+        <div class="mtitle">{{ manifesto.weight }}. {{ manifesto.title }}<br />
+        <span class="mpermalink">Permalink: <a href="http://manifesto.mjs-svc.com/m/{{manifesto.id }}/">http://manifesto.mjs-svc.com/m/{{ manifesto.id }}/</a></div>
+        <div class="mauthor">By: <a href="{{ manifesto.owner.author.get_absolute_url }}">{{ manifesto.owner.username }}</a> 
+        | Posted: {{ manifesto.ctime|date }}</div>
+        <div class="mrating">Rating: {{ manifesto.rating }} 
+        | Stars: {% spaceless %}
+            <span class="starlinks">
+                <img src="http://media.mjs-svc.com/manifesto/images/yellowpixel.gif" style="display: inline; position: relative; top: 0; left: 0; vertical-align: bottom; height: 18px; padding: 0 !important; width: {% widthratio manifesto.stars 5 90 %}px; padding: 0 !important; margin-bottom: 1px !important; border: 0; z-index: 1" />
+                <span style="position: relative; left: -{% widthratio manifesto.stars 5 90 %}pX; padding: 0 !important; background-color: #fff">
+                    {% if user.is_authenticated %}
+                    <a href="rate/1/"><img src="http://media.mjs-svc.com/manifesto/images/star.gif" /></a>
+                    <a href="rate/2/"><img src="http://media.mjs-svc.com/manifesto/images/star.gif" /></a>
+                    <a href="rate/3/"><img src="http://media.mjs-svc.com/manifesto/images/star.gif" /></a>
+                    <a href="rate/4/"><img src="http://media.mjs-svc.com/manifesto/images/star.gif" /></a>
+                    <a href="rate/5/"><img src="http://media.mjs-svc.com/manifesto/images/star.gif" /></a>
+                    {% else %}
+                    <img src="http://media.mjs-svc.com/manifesto/images/star.gif" />
+                    <img src="http://media.mjs-svc.com/manifesto/images/star.gif" />
+                    <img src="http://media.mjs-svc.com/manifesto/images/star.gif" />
+                    <img src="http://media.mjs-svc.com/manifesto/images/star.gif" />
+                    <img src="http://media.mjs-svc.com/manifesto/images/star.gif" />
+                    {% endif %}
+                </span>
+            </span>
+        {% endspaceless %}
+        | Views: {{ manifesto.views }}</div>
+        {% ifequal manifesto.owner user %}
+        <script type="text/javascript">
+        $(function () {
+            $('#mdelete').dialog({autoOpen: false, modal: true});
+        });
+        </script>
+        <div style="text-align: center"><a href="edit/">Edit</a> | <a href="javascript:" onClick="$('#mdelete').dialog('open');">Delete</a></div>
+        <div title="Confirm Deletion" id="mdelete">
+        <p>Are you sure you want to delete?  This cannot be undone!</p>
+        <form method="GET" action="delete/"><input type="hidden" name="confirm" value="yes" /><input type="submit" value="Delete" /></form>
+        </div>
+        {% else %}
+        {% if user.is_staff %}
+        <script type="text/javascript">
+        $(function () {
+            $('#mdelete').dialog({autoOpen: false, modal: true});
+            $('#mfeature').dialog({autoOpen: false, modal: true});
+        });
+        </script>
+        <div style="text-align: center"><a href="edit/">Edit</a> 
+        | <a href="javascript:" onclick="$('#mfeature').dialog('open');" title="Add to the 'Featured' page">Feature</a> 
+        | <a href="javascript:" onClick="$('#mdelete').dialog('open');">Delete</a></div>
+        <div title="Confirm Deletion" id="mdelete">
+        <p>Are you sure you want to delete?  This cannot be undone!</p>
+        <form method="GET" action="delete/"><input type="hidden" name="confirm" value="yes" /><input type="submit" value="Delete" /></form>
+        </div>
+        <div title="Confirm Feature" id="mfeature">
+        <p>This will add the post to the featured list - are you sure?</p>
+        <form method="GET" action="feature"><input type="hidden" name="confirm" value="yes" /><input type="submit" value="Feature Post" /></form>
+        </div>
+        {% endif %}
+        {% endifequal %}
+    </div>
+    <div class="mbody">
+        <div> <!-- for IE -->
+        {{ manifesto.body|safe }}
+        </div>
+        <span class="mtags">Tags: {% tags_for_object manifesto as mtags %}{% ifnotequal mtags.count 0 %}{% for tag in mtags %}<a href="/manifesto/tag/{{ tag.name|urlencode }}/">{{ tag.name }}</a>{% if forloop.last %}{% else %}, {% endif %}{% endfor %}{% endifnotequal %}</span>
+        <span class="mlicense">{% if manifesto.license.url %}<a href="{{manifesto.license.url }}" target="_blank">{% endif %}<abbr title="{{ manifesto.license.title }}">{{ manifesto.license.display|safe }}</abbr> {% if manifesto.owner.get_full_name %}{{ manifesto.owner.get_full_name }}{% else %}{{ manifesto.owner.username }}{% endif %} {{ manifesto.ctime|date:"Y" }}{% if manifesto.license.url %}</a>{% endif %}{{ maniesto.license.display|safe }}  <br /> {{ manifesto.license.description|safe }}</span>
+        <p><!-- AddThis Button BEGIN -->
+        <a class="addthis_button" href="http://www.addthis.com/bookmark.php?v=250&amp;username=xa-4c0d795435294a4f"><img src="http://s7.addthis.com/static/btn/v2/lg-share-en.gif" width="125" height="16" alt="Bookmark and Share" style="border:0"/></a><script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js#username=xa-4c0d795435294a4f"></script>
+        <!-- AddThis Button END --></p>
+    </div>
+</div>
+{% get_comment_count for manifesto as comment_count %}
+{% ifnotequal comment_count 0 %}
+<div class="comments">
+<h3>Comments</h3>
+    <table>
+    {% get_comment_list for manifesto as comment_list %}
+    {% if manifesto.screened_comments %}
+    {% ifequal manifesto.owner user %}
+    {% for comment in comment_list|fill_tree|annotate_tree %}
+        {% ifchanged comment.parent_id %}{% else %}
+            </td>
+            </tr>
+        {% endifchanged %}
+        {% if not comment.open and not comment.close %}
+            </td>
+            </tr>
+        {% endif %}
+        {% if comment.open %}
+            <table>
+        {% endif %}
+
+        <tr>
+            <td><div class="comment {% cycle "odd" "even" %} {% ifnotequal comment.flags.count 0 %}flagged{% endifnotequal %}">
+                <a name="c{{ comment.id }}"></a>
+                <strong>{{ comment.title }}</strong> - 
+                <a href="{{ comment.user.author.get_absolute_url }}">{{ comment.user_name }}</a>
+                <hr />
+                {% ifnotequal comment.flags.count 0 %}<em>This comment is flagged for deletion</em>{% else %}{{ comment.comment|safe }}{% endifnotequal %}
+                <hr />
+                <span class="small">Posted: {{ comment.submit_date }}
+                {% ifequal manifesto.owner user %}
+                    | <a href="/comments/flag/{{ comment.id }}/?next={{ manifesto.get_absolute_url }}">Flag for deletion</a>
+                {% else %}
+                    {% ifequal comment.user user %}
+                        | <a href="/comments/flag/{{ comment.id }}/?next={{ manifesto.get_absolute_url }}">Flag for deletion</a>
+                    {% endifequal %}
+                {% endifequal %}
+                {% if user.is_staff %}
+                    | <a href="/comments/delete/{{ comment.id }}/">Delete</a>
+                {% endif %}
+                {% if user.is_authenticated %}
+                    | <a href="javascript:" onclick="$('#rc{{ comment.id }}').toggle()">Reply</a>
+                {% endif %}
+                </span>
+            </div>
+            {% if user.is_authenticated %}
+                <div id="rc{{comment.id}}" class="commentform hide">
+                    <h3>Reply to this comment</h3>
+                    {% get_comment_form for manifesto as form with comment.id%}
+                    <form action="{% comment_form_target %}" method="post">
+                        {{ form.content_type }}
+                        {{ form.object_pk }}
+                        {{ form.timestamp }}
+                        {{ form.security_hash }}
+                        <input type="hidden" name="name" value="{% if user.get_full_name %}{{ user.get_full_name }} ({{user.username }}){% else %}{{ user.username }}{% endif %}" />
+                        <input type="hidden" name="email" value="{{ user.email }}" />
+                        <input type="hidden" name="url" value="http://manifesto.mjs-svc.com{{ user.author.get_absolute_url }}" />
+                        <input type="hidden" name="next" value="{{ manifesto.get_absolute_url }}" />
+                        <p><label for="id_title">Title:</label> {{ form.title }}</p>
+                        <p><label for="id_comment">Comment:</label><br />{{ form.comment }}</p>
+                        <p style="display: none"><label for="id_honeypot">If you enter anything in this field your comment will be treated as spam</label> {{ form.honeypot }}</p>
+                        {{ form.parent }}
+                        <p>
+                            <input type="submit" value="Post" />
+                        </p>
+                    </form>
+                </div>
+            {% endif %}
+
+        {% for close in comment.close %}
+            </td>
+            </tr>
+            </table>
+        {% endfor %}
+    {% endfor %}
+    {% endifequal %}
+    {% else %}
+    {% for comment in comment_list|fill_tree|annotate_tree %}
+        {% ifchanged comment.parent_id %}{% else %}
+            </td>
+            </tr>
+        {% endifchanged %}
+        {% if not comment.open and not comment.close %}
+            </td>
+            </tr>
+        {% endif %}
+        {% if comment.open %}
+            <table>
+        {% endif %}
+
+        <tr>
+            <td><div class="comment {% cycle "odd" "even" %} {% ifnotequal comment.flags.count 0 %}flagged{% endifnotequal %}">
+                <a name="c{{ comment.id }}"></a>
+                <strong>{{ comment.title }}</strong> - 
+                <a href="{{ comment.user.author.get_absolute_url }}">{{ comment.user_name }}</a>
+                <hr />
+                {% ifnotequal comment.flags.count 0 %}<em>This comment is flagged for deletion</em>{% else %}{{ comment.comment|safe }}{% endifnotequal %}
+                <hr />
+                <span class="small">Posted: {{ comment.submit_date }}
+                {% ifequal manifesto.owner user %}
+                    | <a href="/comments/flag/{{ comment.id }}/?next={{ manifesto.get_absolute_url }}">Flag for deletion</a>
+                {% else %}
+                    {% ifequal comment.user user %}
+                        | <a href="/comments/flag/{{ comment.id }}/?next={{ manifesto.get_absolute_url }}">Flag for deletion</a>
+                    {% endifequal %}
+                {% endifequal %}
+                {% if user.is_staff %}
+                    | <a href="/comments/delete/{{ comment.id }}/">Delete</a>
+                {% endif %}
+                {% if user.is_authenticated %}
+                    | <a href="javascript:" onclick="$('#rc{{ comment.id }}').toggle()">Reply</a>
+                {% endif %}
+                </span>
+            </div>
+            {% if user.is_authenticated %}
+                <div id="rc{{comment.id}}" class="commentform hide">
+                    <h3>Reply to this comment</h3>
+                    {% get_comment_form for manifesto as form with comment.id %}
+                    <form action="{% comment_form_target %}" method="post">
+                        {{ form.content_type }}
+                        {{ form.object_pk }}
+                        {{ form.timestamp }}
+                        {{ form.security_hash }}
+                        <input type="hidden" name="name" value="{% if user.get_full_name %}{{ user.get_full_name }} ({{user.username }}){% else %}{{ user.username }}{% endif %}" />
+                        <input type="hidden" name="email" value="{{ user.email }}" />
+                        <input type="hidden" name="url" value="http://manifesto.mjs-svc.com{{ user.author.get_absolute_url }}" />
+                        <input type="hidden" name="next" value="{{ manifesto.get_absolute_url }}" />
+                        <p><label for="id_title">Title:</label> {{ form.title }}</p>
+                        <p><label for="id_comment">Comment:</label><br />{{ form.comment }}</p>
+                        <p style="display: none"><label for="id_honeypot">If you enter anything in this field your comment will be treated as spam</label> {{ form.honeypot }}</p>
+                        {{ form.parent }}
+                        <p>
+                            <input type="submit" value="Post" />
+                        </p>
+                    </form>
+                </div>
+            {% endif %}
+
+        {% for close in comment.close %}
+            </td>
+            </tr>
+            </table>
+        {% endfor %}
+    {% endfor %}
+    {% endif %}
+    </table>
+</div>
+<hr />
+{% endifnotequal %}
+{% if user.is_authenticated %}
+    <div class="commentform">
+        <h3>Post a comment</h3>
+        {% get_comment_form for manifesto as form %}
+        <form action="{% comment_form_target %}" method="post">
+            {{ form.content_type }}
+            {{ form.object_pk }}
+            {{ form.timestamp }}
+            {{ form.security_hash }}
+            <input type="hidden" name="name" value="{% if user.get_full_name %}{{ user.get_full_name }} ({{user.username }}){% else %}{{ user.username }}{% endif %}" />
+            <input type="hidden" name="email" value="{{ user.email }}" />
+            <input type="hidden" name="url" value="http://manifesto.mjs-svc.com{{ user.author.get_absolute_url }}" />
+            <input type="hidden" name="next" value="{{ manifesto.get_absolute_url }}" />
+            <p><label for="id_title">Title:</label> {{ form.title }}</p>
+            <p><label for="id_comment">Comment:</label><br />{{ form.comment }}</p>
+            <p style="display: none"><label for="id_honeypot">If you enter anything in this field your comment will be treated as spam</label> {{ form.honeypot }}</p>
+            {{ form.parent }}
+            <p>
+                <input type="submit" value="Post" />
+            </p>
+    </div>
+{% endif %}
+{% endblock %}

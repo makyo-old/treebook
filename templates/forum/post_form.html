@@ -1,0 +1,27 @@
+{% extends "forum/base.html" %}
+
+{% block title %}{% block header %}{% endblock %}{% endblock %}
+
+{% block content %}
+<form method="post">
+<table width="100%">
+    <tbody>
+        <tr>
+            <th width="25%"><label for="title">Title</label></th>
+            <td>{{ form.title }}</td>
+        </tr>
+        <tr>
+            <th><label for="body">Body</label><br />BBCode enabled; HTML disabled</th>
+            <td>{{ form.body }}</td>
+        </tr>
+    </tbody>
+    <tfoot>
+        <tr>
+            <th colspan="2">
+                <input type="submit" value="Submit reply" />
+            </th>
+        </tr>
+    </tfoot>
+</table>
+</form>
+{% endblock %}

@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block title %}{% block header %}Log in{% endblock %}{% endblock %}
+
+{% block content %}
+{% if form.errors %}<div class="failure">Username and password didn't match any users.  Try again?</div>{% endif %}
+<form method="POST" action="/accounts/login/">
+<table>
+    <tr>
+        <th>{{ form.username.label_tag }}</th>
+        <td>{{ form.username }}</td>
+    </tr>
+    <tr>
+        <th>{{ form.password.label_tag }}</th>
+        <td>{{ form.password }}</td>
+    </tr>
+    <tr>
+        <td rowspan="2"><input type="submit" value="Log in" /></td>
+    </tr>
+</table>
+<input type="hidden" name="next" value="{{ next }}" />
+</form>
+<p><a href="/accounts/password/reset/">Forgot password.</a></p>
+{% endblock %}

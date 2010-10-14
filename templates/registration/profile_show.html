@@ -1,0 +1,29 @@
+{% extends "base.html"%}
+
+{% block title %}{% block header %}View/Edit Profile{% endblock %}{% endblock %}
+
+{% block content %}
+<form method="post" action="/accounts/profile/update/">
+    <table id="profile">
+        <tr>
+            <th><label for="firstname">First Name:</label></th>
+            <td><span class="nohide">{{ user.first_name }}</span> <input type="text" name="firstname" class="hide" value="{{ user.first_name }}" /></td>
+        </tr>
+        <tr>
+            <th><label for="lastname">Last Name:</label></th>
+            <td><span class="nohide">{{ user.last_name }}</span> <input type="text" name="lastname" class="hide" value="{{ user.last_name }}" /></td>
+        </tr>
+        <tr>
+            <th><label for="email">E-mail:</label></th>
+            <td><span class="nohide">{{ user.email }}</span> <input type="text" name="email" class="hide" value="{{ user.email }}" /></td>
+        </tr>
+        <tr>
+            <td colspan="2"><input type="submit" value="Update profile" class="hide" /></td>
+        </tr>
+        <tr>
+            <td colspan="2"><a href="javascript:" onClick="$('#profile .hide').toggle();$('.nohide').toggle('fast');">Toggle editing</a></td>
+        </tr>
+    </table>
+</form>
+<p><a href="/accounts/password/change/">Change password</a></p>
+{% endblock %}

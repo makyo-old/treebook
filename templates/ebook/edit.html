@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block title %}{% block header %}New Post{% endblock %}{% endblock %}
+
+{% block content %}
+{% if form.errors %}{% for error in form.errors %}<div class="failure">{{ error }}</div>{% endfor %}{% endif %}
+<form method="post" id="newpost">
+    {{ form.title }}
+    {{ form.body }}
+    <strong><label for="tags">Tags</label></strong>{{ form.tags }}<br />
+    <strong><label for="rating">Rating</label></strong>{{ form.rating }}<br />
+    {{ form.published }}<strong><label for="published">Publish (uncheck for draft)</label></strong><br />
+    {{ form.users_only }}<strong><label for="users_only">Protected (logged-in users only)</label></strong><br />
+    {{ form.friends_only }}<strong><label for="friends_only">Friends Only</label></strong><br />
+    {{ form.screen_comments }}<strong><label for="screen_comments">Screen comments</label></strong><br />
+    <strong><label for="license">License:</label></strong>{{ form.license }}<br />
+    <input type="submit" value="Submit" />
+</form>
+{% endblock %}

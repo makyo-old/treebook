@@ -1,0 +1,31 @@
+{% extends "forum/base.html" %}
+
+{% load bbcode %}
+
+{% block title %}{% block header %}Private Messages{% endblock %}{% endblock %}
+
+{% block content %}
+<table id="forum">
+    <thead>
+        <tr>
+            <th>Private Message</th>
+            <th>Posts</th>
+        </tr>
+    </thead>
+    {% for pm in pms %}
+    {% if pm.has_unread %}
+    <tr class="unread">
+    {% else %}
+    <tr class="{% cycle "odd" "even" %}">
+    {% endif %}
+        <td><strong><a href="/forums/pm/{{ pm.id }}/">{{ pm.title }}</a></strong> -
+            {% if pm.user_from.creator_set %}<a style="font-size: 75%" href="/store/creator/{{ pm.user_from.username }}/">{{ pm.user_from.get_full_name }}</a>
+            {% else %}{{ pm.user_from.username }}{% endif %} &rarr;
+            {% if pm.user_to.creator_set %}<a style="font-size: 75%" href="/store/creator/{{ pm.user_to.username }}/">{{ pm.user_to.get_full_name }}</a>
+            {% else %}{{ pm.user_to.username }}{% endif %}<br />
+            <p style="font-size: 75%">{{ pm.body|striptags|truncatewords:25|bbcode|safe }}</p></td>
+        <td>{{ pm.pm_set.count }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}

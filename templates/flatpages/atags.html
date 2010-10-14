@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{% load tagging_tags %}
+
+{% block title %}{% block header %}Author Interests{% endblock %}{% endblock %}
+
+{% block content %}
+{% tag_cloud_for_model usermgmt.Author as atags %}
+{% for tag in atags %}<span style="font-size: 1{{ tag.font_size }}"><a href="/interest/{{ tag.name|urlencode }}/">{{ tag.name }}</a></span> {% endfor %}
+{% endblock %}

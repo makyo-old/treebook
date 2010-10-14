@@ -1,0 +1,36 @@
+{% extends "forum/base_minimal.html" %}
+
+{% load bbcode %}
+
+{% block title %}{% block header %}{{ post.title }}{% endblock %}{% endblock %}
+
+{% block content %}
+<table id="forum" style="width: 100%">
+    <thead>
+        <tr>
+            <th width="20%">User</th>
+            <th>Post</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr class="odd">
+            <td><div class="forum-poster"><a name="{{ post.id }}"><strong>
+                {% if post.owner.creator_set %}<a href="/store/creator/{{ post.owner.username }}/">{{ post.owner.get_full_name }}</a>
+                {% else %}{{ post.owner.username }}{% endif %}
+            </strong></a></div></td>
+            <td><div class="post-header"><strong>{{ post.title }}</strong></div>
+                <div class="post-body">{{ post.body|striptags|bbcode|safe }}</div></td>
+        </tr>
+        {% for p in post.post_set.all %}
+        <tr class="{% cycle "even" "odd" %}">
+            <td><div class="forum-poster"><a name="{{ p.id }}"><strong>
+                {% if p.owner.creator_set %}<a href="/store/creator/{{ p.owner.username }}/">{{ p.owner.get_full_name }}</a>
+                {% else %}{{ p.owner.username }}{% endif %}
+            </strong></a></div></td>
+            <td><div class="post-header"><abbr text="In reply to {{ post.title }}">{{ p.title }}</abbr></div>
+                <div class="post-body">{{ p.body|striptags|bbcode|safe }}</div></td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% load tagging_tags %}
+
+{% block title %}{% block header %}{% if author.user.get_full_name %}{{ author.user.get_full_name }} ({{ author.user.username }}){% else %}{{ author.user.username }}{% endif %}{% endblock %}{% endblock %}
+
+{% block content %}
+{% ifequal author.user user %}<a href="{{ author.get_absolute_url }}edit">Edit</a> | <a href="/forums/pm/">Private Messages</a>{% else  %}{% if user.is_authenticated %}<a href="/forums/pm/{{ author.user.username }}">Send Private Message</a>{% endif %}{% endifequal %}
+<div id="userbio">
+    <p>{% if author.bio|safe %}{{ author.bio }}{% else %}<em>No bio</em>{% endif %}</p>
+    <p>{% tags_for_object author as atags %}{% ifnotequal atags.count 0 %}Interests: {% for tag in atags %}<a href="/interest/{{ tag.name }}/">{{ tag.name }}</a>{% if forloop.last %}{% else %}, {% endif %}{% endfor %}{% else %}<em>No interests listed</em>{% endifnotequal %}</p>
+    <p>{% if user.is_authenticated %}{% if friend %}<a href="defriend/">De-friend</a>{% else %}<a href="friend/">Add as friend</a>{% endif %}{% endif %}</p>
+</div>
+{% for manifesto in manifestos %}
+<div class="mheader {% cycle "odd" "even" %}">
+    <div class="mtitle">{{ manifesto.weight }}. <a href="{{ manifesto.get_absolute_url }}">{{ manifesto.title }}</a></div>
+    <span class="mauthor">By: <a href="{{ manifesto.owner.author.get_absolute_url }}">{{ manifesto.owner.username }}</a></span>
+    <span class="mctime">Post date: {{ manifesto.ctime|date }}</span>
+    <span class="mrating">Rating: {{ manifesto.rating }}</span>
+    <span class="mstars">Stars: {{ manifesto.stars }}</span>
+    <span class="mviews">Views: {{ manifesto.views }}</span>
+    <span class="mtags">Tags: {% tags_for_object manifesto as mtags %}{% ifnotequal mtags.count 0 %}{% for tag in mtags %}<a href="/manifesto/tag/{{ tag.name|urlencode }}/">{{ tag.name }}</a>{% if forloop.last %}{% else %}, {% endif %}{% endfor %}{% endifnotequal %}</span>
+    <hr />
+    <span class="preview">{{ manifesto.body|striptags|truncatewords:100 }}</span>
+</div>
+{% endfor %}
+
+{% endblock %}

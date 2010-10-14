@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block title %}{% block header %}Join{% endblock %}{% endblock %}
+
+{% block content %}
+<form method="post">
+    <table>
+        <tr>
+            <th><abbr title="Letters, numbers, and underscore only!"><label for="username">Username:</label></abbr></th>
+            <td><input type="text" name="username" /></td>
+        </tr>
+        <tr>
+            <th><label for="password">Password:</label></th>
+            <td><input id="p1" type="password" name="password" /></td>
+        </tr>
+        <tr>
+            <th><label for="password2">Confirm password:</label></th>
+            <td><input id="p2" type="password" name="password2" /></td>
+        </tr>
+        <tr>
+            <th><label for="email">Email:</label></th>
+            <td><input id="email" type="text" name="email" /></td>
+        </tr>
+        <tr>
+            <td colspan="2"><input id="submit" type="submit" value="Join" /></td>
+        </tr>
+    </table>
+</form>
+<p><em>Make sure to <a href="/rules/">read the rules</a> first!</em></p>
+<script type="text/javascript">
+$('#submit').attr('disabled', 'disabled');
+$('#p2').focusout(function() {
+    if ($('#p2').val() == $('#p1').val()) {
+        $('#p1').removeClass('failure').addClass('success');
+        $('#p2').removeClass('failure').addClass('success');
+        $('#submit').removeAttr('disabled');
+    } else {
+        $('#p1').removeClass('success').addClass('failure');
+        $('#p2').removeClass('success').addClass('failure');
+    }
+});
+</script>
+{%endblock %}

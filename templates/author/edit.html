@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block title %}{% block header %}Edit Profile{% endblock %}{% endblock %}
+
+{% block content %}
+<form method="POST">
+    <textarea name="bio" rows="25" cols="78">{{ author.bio }}</textarea>
+    <strong>Interests: </strong><input type="text" name="tags" maxlength="255" value="{{ author.tags }}"/><br />
+    <input type="submit" value="Submit" />
+</form>
+{% endblock %}

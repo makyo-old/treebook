@@ -1,0 +1,34 @@
+{% extends "forum/base.html" %}
+
+{% block title %}{% block header %}{% endblock %}{% endblock %}
+
+{% block content %}
+<form method="post">
+<table width="100%">
+    <thead>
+        <tr>
+            <th colspan="2">
+                <iframe width="80%" height="200px" src="{{ topic_url }}"></iframe>
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <th width="25%"><label for="title">Title</label></th>
+            <td>{{ form.title }}</td>
+        </tr>
+        <tr>
+            <th><label for="body">Body</label></th>
+            <td>{{ form.body }}</td>
+        </tr>
+    </tbody>
+    <tfoot>
+        <tr>
+            <th colspan="2">
+                <input type="submit" value="Submit reply" />
+            </th>
+        </tr>
+    </tfoot>
+</table>
+</form>
+{% endblock %}

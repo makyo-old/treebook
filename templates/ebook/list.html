@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% load tagging_tags %}
+{% load comments %}
+{% load threadedcomments_tags %}
+
+{% block title %}{% block header %}{{ title }}{% endblock %}{% endblock %}
+
+{% block content %}
+{% for manifesto in manifestos.object_list %}
+<div class="mheader {% cycle "odd" "even" %}">
+    <div class="mtitle">{{ manifesto.weight }}. <a href="{{ manifesto.get_absolute_url }}">{{ manifesto.title }}</a></div>
+    <div class="mauthor">By: <a href="{{ manifesto.owner.author.get_absolute_url }}">{{ manifesto.owner.username }}</a> 
+    | Posted: {{ manifesto.ctime|date }}</div>
+    <div class="mrating">Rating: {{ manifesto.rating }} 
+    | Stars: {% spaceless %}
+        <span class="starlinks">
+            <img src="http://media.mjs-svc.com/manifesto/images/yellowpixel.gif" style="display: inline; position: relative; top: 0; left: 0; vertical-align: bottom; height: 18px; padding: 0 !important; width: {% widthratio manifesto.stars 5 90 %}px; padding: 0 !important; margin-bottom: 1px !important; border: 0; z-index: 1" />
+            <span style="position: relative; left: -{% widthratio manifesto.stars 5 90 %}pX; padding: 0 !important; background-color: #fff">
+                <img src="http://media.mjs-svc.com/manifesto/images/star.gif" />
+                <img src="http://media.mjs-svc.com/manifesto/images/star.gif" />
+                <img src="http://media.mjs-svc.com/manifesto/images/star.gif" />
+                <img src="http://media.mjs-svc.com/manifesto/images/star.gif" />
+                <img src="http://media.mjs-svc.com/manifesto/images/star.gif" />
+            </span>
+        </span>
+    {% endspaceless %}
+    | Views: {{ manifesto.views }}
+    | Comments: {% get_comment_count for manifesto as comment_count %}{{ comment_count }}{% if manifesto.screen_comments %}(screened){% endif %}</div>
+    <div class="mtags">Tags: {% tags_for_object manifesto as mtags %}{% ifnotequal mtags.count 0 %}{% for tag in mtags %}<a href="/manifesto/tag/{{ tag.name|urlencode }}/">{{ tag.name }}</a>{% if forloop.last %}{% else %}, {% endif %}{% endfor %}{% endifnotequal %}</div>
+    <hr />
+    <div class="preview">{{ manifesto.body|striptags|safe|truncatewords:100 }}</div>
+</div>
+{% empty %}
+<div class="warning">No manifestos to list</div>
+{% endfor %}
+
+<div class="pagination">
+    <strong>Page:</strong><br />
+    {% ifnotequal manifestos.number 1 %}{% ifnotequal manifestos.number 2 %}<a href="?page=1">1</a> ... {% endifnotequal %}{% endifnotequal %}
+    {% if manifestos.has_previous %}
+    <a href="?page={{ manifestos.previous_page_number }}">{{ manifestos.previous_page_number }}</a>
+    {% endif %}
+
+    <strong>{{ manifestos.number }}</strong>
+
+    {% if manifestos.has_next %}
+    <a href="?page={{ manifestos.next_page_number }}">{{ manifestos.next_page_number }}</a>
+    {% endif %}
+    {% ifnotequal manifestos.paginator.num_pages manifestos.number %}{% ifnotequal manifestos.number manifestos.paginator.num_pages|add:"-1" %} ... <a href="?page={{ manifestos.paginator.num_pages }}">{{ manifestos.paginator.num_pages }}</a>{% endifnotequal %}{% endifnotequal %}
+</div>
+{% endblock %}

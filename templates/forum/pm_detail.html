@@ -1,0 +1,63 @@
+{% extends "forum/base.html" %}
+
+{% load bbcode %}
+
+{% block title %}{% block header %}{{ post.title }}{% endblock %}{% endblock %}
+
+{% block content %}
+<table id="forum">
+    <thead>
+        <tr>
+            <th width="25%">Users</th>
+            <th>Private Message</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr class="odd">
+            <td><div class="forum-poster"><a name="{{ post.id }}"> </a><strong>From:
+                {% ifequal post.user_from user %}you{% else %}
+                {% if post.user_from.creator_set %}<a href="/store/creator/{{ post.user_from.username }}/">{{ post.user_from.get_full_name }}</a>
+                {% else %}{{ post.user_from.username }}{% endif %}
+                {% endifequal %}<br /> To:
+                {% ifequal post.user_to user %}you{% else %}
+                {% if post.user_to.creator_set %}<a href="/store/creator/{{ post.user_to.username }}/">{{ post.user_to.get_full_name }}</a>
+                {% else %}{{ post.user_to.username }}{% endif %}
+                {% endifequal %}
+            </strong></div></td>
+            <td><div class="post-header"><strong>{{ post.title }}</strong></div><div class="post-controls">[ 
+                <a href="/forums/pm/{{ post.id }}/reply?reply-to={{ p.id }}">Quote</a> 
+                {% ifequal post.user_to user %}{% if not post.is_read %}| <a href="/forums/pm/{{ post.id }}/read"><strong>Mark as read</strong></a>{% endif %}{% endifequal %}
+                ]</div>
+                <div class="post-body">{{ post.body|striptags|bbcode|safe }}</div></td>
+        </tr>
+        {% for p in post.pm_set.all %}
+        <tr class="{% cycle "even" "odd" %}">
+            <td><div class="forum-poster"><a name="{{ p.id }}"> </a><strong>From:
+                {% ifequal p.user_from user %}you{% else %}
+                {% if p.user_from.creator_set %}<a href="/store/creator/{{ p.user_from.username }}/">{{ p.user_from.get_full_name }}</a>
+                {% else %}{{ p.user_from.username }}{% endif %}
+                {% endifequal %}<br /> To:
+                {% ifequal p.user_to user %}you{% else %}
+                {% if p.user_to.creator_set %}<a href="/store/creator/{{ p.user_to.username }}/">{{ p.user_to.get_full_name }}</a>
+                {% else %}{{ p.user_to.username }}{% endif %}
+                {% endifequal %}
+            </strong></div></td>
+            <td><div class="post-header"><abbr text="In reply to {{ post.title }}">{{ p.title }}</abbr></div><div class="post-controls">[ 
+                <a href="/forums/pm/{{ post.id }}/reply?reply-to={{ p.id }}">Quote</a> 
+                {% ifequal p.user_to user %}{% if not p.is_read %}| <a href="/forums/pm/{{ p.id }}/read"><strong>Mark as read</strong></a>{% endif %}{% endifequal %}
+                ]</div>
+                <div class="post-body">{{ p.body|striptags|bbcode|safe }}</div></td>
+        </tr>
+        {% endfor %}
+    </tbody>
+    <tfoot>
+        <tr>
+            <th colspan="2">
+                <form action="/forums/pm/{{ post.id }}/reply/">
+                    <input type="submit" value="Reply" />
+                </form>
+            </th>
+        </tr>
+    </tfoot>
+</table>
+{% endblock %}
